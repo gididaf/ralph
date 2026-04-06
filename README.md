@@ -53,9 +53,13 @@ Progress persists through **files on disk and git history**, not in-memory conte
 ## Installation
 
 ```bash
-git clone https://github.com/gididaf/ralph.git
-cd ralph
-bash install.sh
+curl -fsSL https://raw.githubusercontent.com/gididaf/ralph/main/install.sh | bash
+```
+
+Or clone and install manually:
+
+```bash
+git clone https://github.com/gididaf/ralph.git && cd ralph && bash install.sh
 ```
 
 **Requirements:**

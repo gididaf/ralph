@@ -4,12 +4,18 @@ set -euo pipefail
 # =============================================================================
 # Ralph Installer
 # Installs Ralph slash commands and loop script for Claude Code
+#
+# Usage:
+#   curl -fsSL https://raw.githubusercontent.com/gididaf/ralph/main/install.sh | bash
+#
+# Or clone and run locally:
+#   git clone https://github.com/gididaf/ralph.git && cd ralph && bash install.sh
 # =============================================================================
 
-REPO_DIR="$(cd "$(dirname "$0")" && pwd)"
 CLAUDE_DIR="$HOME/.claude"
 COMMANDS_DIR="$CLAUDE_DIR/commands"
 SCRIPTS_DIR="$CLAUDE_DIR/scripts"
+REPO_URL="https://github.com/gididaf/ralph.git"
 
 echo ""
 echo "  ______      _       _     "
@@ -24,11 +30,30 @@ echo ""
 echo " Autonomous loop for Claude Code"
 echo ""
 
-# Check if Claude Code config directory exists
-if [[ ! -d "$CLAUDE_DIR" ]]; then
-  echo "[ralph] Creating ~/.claude directory..."
-  mkdir -p "$CLAUDE_DIR"
+# Determine source: are we inside the cloned repo, or running via curl?
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}" 2>/dev/null || echo ".")" && pwd)"
+if [[ -f "$SCRIPT_DIR/commands/ralph-init.md" ]]; then
+  REPO_DIR="$SCRIPT_DIR"
+  CLEANUP=""
+else
+  # Running via curl — clone to temp directory
+  if ! command -v git &>/dev/null; then
+    echo "[ralph] ERROR: git is required. Install git first." >&2
+    exit 1
+  fi
+  REPO_DIR=$(mktemp -d)
+  CLEANUP="$REPO_DIR"
+  echo "[ralph] Downloading Ralph..."
+  git clone --quiet --depth 1 "$REPO_URL" "$REPO_DIR"
 fi
+
+# Cleanup on exit if we cloned
+cleanup() {
+  if [[ -n "${CLEANUP:-}" ]] && [[ -d "$CLEANUP" ]]; then
+    rm -rf "$CLEANUP"
+  fi
+}
+trap cleanup EXIT
 
 # Create target directories
 mkdir -p "$COMMANDS_DIR"
