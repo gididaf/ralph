@@ -197,8 +197,13 @@ Ralph is based on the [Ralph Wiggum coding technique](https://ghuntley.com/ralph
 ## Uninstall
 
 ```bash
-cd ralph
-bash uninstall.sh
+curl -fsSL https://raw.githubusercontent.com/gididaf/ralph/main/uninstall.sh | bash
+```
+
+Or from a local clone:
+
+```bash
+cd ralph && bash uninstall.sh
 ```
 
 This removes the slash commands and loop script. Your project files (`PROMPT.md`, `fix_plan.md`, `.ralph/`) are left untouched.
